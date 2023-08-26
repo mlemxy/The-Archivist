@@ -10,7 +10,9 @@ app.secret_key = "buy_me_car"
 
 TEMP_DIR = 'temp_downloads'
 TEMP_ZIP_DIR = 'temp_zips'
-MAX_THREADS = 10
+MAX_THREADS = 30
+
+RUNNING_DOWNLOADED_VIDEOS = 0
 
 def create_temp_dir_if_not_exists(directory):
     if not os.path.exists(directory):
@@ -43,7 +45,10 @@ def download_video(video_url):
         return None
 
 def download_multiple_videos(link, option):
-    if option == 'channel':
+    global RUNNING_DOWNLOADED_VIDEOS
+    if option == 'single':
+        video_urls = [link]
+    elif option == 'channel':
         try:
             video_urls = Channel(link).video_urls
         except RegexMatchError:
@@ -65,6 +70,7 @@ def download_multiple_videos(link, option):
             result = future.result()
             if result:
                 downloaded_videos.append(result)
+                RUNNING_DOWNLOADED_VIDEOS += 1
             else:
                 videos_with_error.append(result)
 
@@ -81,7 +87,7 @@ def create_zip(downloaded_videos):
                     cleaned_title = clean_filename(video.title)
                     video_stream_path = os.path.join(TEMP_DIR, f"{cleaned_title}.mp4")
                     if os.path.exists(video_stream_path):
-                        unique_filename = f"{cleaned_title}_{index}.mp4" 
+                        unique_filename = f"{cleaned_title}_{index}.mp4"
                         zipf.write(video_stream_path, unique_filename)
                 except AgeRestrictedError:
                     pass
@@ -89,6 +95,13 @@ def create_zip(downloaded_videos):
         return temp_zip_path
     except Exception as e:
         return None
+
+def cleanup_temp_directory():
+    try:
+        shutil.rmtree(TEMP_DIR)
+        shutil.rmtree(TEMP_ZIP_DIR)
+    except Exception as e:
+        print(f"Error cleaning up temp directory: {e}")
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -103,16 +116,43 @@ def index():
         zip_file_path = create_zip(downloaded_videos)
         session['downloaded_zip'] = zip_file_path
 
-    return render_template('index.html', downloaded_videos=downloaded_videos, total_videos=total_videos)
+    return render_template('index.html', downloaded_videos=downloaded_videos, total_videos=total_videos, total_downloaded_videos=RUNNING_DOWNLOADED_VIDEOS)
 
 @app.route('/download_zip', methods=['GET'])
 def download_zip():
     zip_file_path = session.get('downloaded_zip')
     if zip_file_path and os.path.exists(zip_file_path):
         zip_file_name = os.path.basename(zip_file_path)
-        return send_file(zip_file_path, as_attachment=True, download_name=zip_file_name)
+
+        response = send_file(zip_file_path, as_attachment=True, download_name=zip_file_name)
+
+        cleanup_temp_directory()
+
+        return response
     else:
         return "Zip file not available !", 404
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+'''
+        # edge cases
+        if option == 'playlist':
+            if 'watch?v' in link:
+                error = "invalid option ! please select video for a video URL."
+            elif '@' in link:
+                error = "invalid option ! please select channel for a channel URL."
+            
+        elif option == 'channel':
+            if 'watch?v' in link:
+                error = "invalid option ! please select video for a video URL."
+            elif 'playlist?list=' in link:
+                error = "invalid option ! please select playlist for a playlist URL."
+        
+        elif option == 'single':
+            if '@' in link:
+                error = "invalid option ! please select channel for a channel URL."
+            elif 'playlist?list=' in link:
+                error = "invalid option ! please select playlist for a playlist URL."
+
+'''
