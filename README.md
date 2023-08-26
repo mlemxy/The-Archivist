@@ -5,7 +5,7 @@ Built as part of the [GooseHacks 2023](https://goosehacks-2023.devpost.com/)'s h
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white) ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white) 
 
 ## Demo
-
+![demo](https://github.com/mlemxy/The-Archivist/assets/58766039/622d81a5-cec8-4485-b482-0b9e72ecca11)
 
 ## How to use
 To clone and run this application, you will need Git:
