@@ -16,7 +16,7 @@ def create_temp_dir_if_not_exists(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-def cleaned_filename(title):
+def clean_filename(title):
     valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
     cleaned_title = ''.join(c if c in valid_chars else '_' for c in title)
     return cleaned_title
@@ -25,7 +25,7 @@ def download_video(video_url):
     try:
         video = YouTube(video_url)
         youtube_stream = video.streams.get_lowest_resolution()
-        cleaned_title = cleaned_filename(video.title)
+        cleaned_title = clean_filename(video.title)
         temp_file_path = os.path.join(TEMP_DIR, f"{cleaned_title}.mp4")
         youtube_stream.download(output_path=TEMP_DIR, filename=f"{cleaned_title}.mp4")
         check_exist = os.path.exists(temp_file_path)
@@ -73,24 +73,23 @@ def download_multiple_videos(link, option):
 def create_zip(downloaded_videos):
     try:
         create_temp_dir_if_not_exists(TEMP_ZIP_DIR)
-        temp_zip_path = os.path.join(TEMP_ZIP_DIR, "download(s).zip")
+        temp_zip_path = os.path.join(TEMP_ZIP_DIR, "downloaded_videos.zip")
         with zipfile.ZipFile(temp_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
             for index, video_data in enumerate(downloaded_videos, start=1):
                 video = video_data['video']
                 try:
-                    sanitized_title = cleaned_filename(video.title)
-                    video_stream_path = os.path.join(TEMP_DIR, f"{sanitized_title}_{index}.mp4")
+                    cleaned_title = clean_filename(video.title)
+                    video_stream_path = os.path.join(TEMP_DIR, f"{cleaned_title}.mp4")
                     if os.path.exists(video_stream_path):
-                        zipf.write(video_stream_path, f"{sanitized_title}_{index}.mp4") 
+                        unique_filename = f"{cleaned_title}_{index}.mp4" 
+                        zipf.write(video_stream_path, unique_filename)
                 except AgeRestrictedError:
                     pass
 
         return temp_zip_path
     except Exception as e:
-        print(f"Error creating zip: {e}")
         return None
 
-    
 @app.route('/', methods=['GET', 'POST'])
 def index():
     downloaded_videos = []
@@ -113,7 +112,7 @@ def download_zip():
         zip_file_name = os.path.basename(zip_file_path)
         return send_file(zip_file_path, as_attachment=True, download_name=zip_file_name)
     else:
-        return "File not available !", 404
+        return "Zip file not available !", 404
 
 if __name__ == '__main__':
     app.run(debug=True)

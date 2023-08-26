@@ -63,11 +63,18 @@ button:hover {
 }
 
 .progress-fill {
-    background-color: #007bff;
+    background-color: #D2DBDD;
     height: 100%;
     width: 0;
     transition: width 0.2s;
 }
+
+.progress-text {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
 
 ul {
     list-style: none;
@@ -110,7 +117,7 @@ ul li {
 }
 
 .video-thumbnail {
-    flex: 0 0 80px; /* Adjust the width of the thumbnail */
+    flex: 0 0 80px; 
     margin-right: 10px;
 }
 
@@ -123,6 +130,16 @@ ul li {
     flex: 1;
 }
 
-.video-title {
-    font-weight: bold;
+.video-container {
+    max-height: 300px; 
+    overflow: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.video-list-scrollbox {
+    max-height: 100%;
+    overflow: auto;
+    padding-right: 10px; 
 }

@@ -24,25 +24,33 @@
         </form>
 
         {% if downloaded_videos %}
-            <ul class="video-list">
-                {% for video in downloaded_videos %}
-                    <li class="video-item">
-                        <div class="video-thumbnail">
-                            <img src="{{ video['video'].thumbnail_url }}" alt="Thumbnail">
-                        </div>
-                        <div class="video-info">
-                            <p class="video-title">{{ video['video'].title }}</p>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
-
-            <h3>Total Videos: {{ total_videos }}</h3>
-
-            <h3>Progress:</h3>
-            <div class="progress-bar">
-                <div class="progress-fill" style="width: {{ (downloaded_videos|length / total_videos) * 100 }}%"></div>
+            <div class="video-container">
+                <div class="video-list-scrollbox">
+                    <ul class="video-list">
+                        {% for video in downloaded_videos %}
+                            <li class="video-item">
+                                <div class="video-thumbnail">
+                                    <img src="{{ video['video'].thumbnail_url }}" alt="Thumbnail">
+                                </div>
+                                <div class="video-info">
+                                    <p class="video-title">{{ video['video'].title }}</p>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
+
+            <div class="progress-bar">
+                {% if total_videos > 0 %}
+                    <div class="progress-fill" style="width: {{ (downloaded_videos|length / total_videos) * 100 }}%"></div>
+                {% else %}
+                    <div class="progress-fill" style="width: 0;"></div>
+                {% endif %}
+            </div>
+            <p class="progress-text">
+                Progress: {{ downloaded_videos|length }} / {{ total_videos }} videos
+            </p>
 
             <a href="{{ url_for('download_zip') }}" class="btn btn-primary">Download File</a>
         {% endif %}
