@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>The Archivist</title>
+</head>
+<body>
+    <header>
+        <h1>The Archivist</h1>
+    </header>
+
+    <main>
+        <form method="POST" action="/" class="form">
+            <label for="link">Input video URL:</label>
+            <input type="url" name="link" id="link" required>
+            <label for="option">Source:</label>
+            <select name="option" id="option" required class="select-box">
+                <option value="channel">Channel</option>
+                <option value="playlist">Playlist</option>
+            </select>
+            <button type="submit">Download Videos</button>
+        </form>
+
+        {% if downloaded_videos %}
+            <ul class="video-list">
+                {% for video in downloaded_videos %}
+                    <li class="video-item">
+                        <div class="video-thumbnail">
+                            <img src="{{ video['video'].thumbnail_url }}" alt="Thumbnail">
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">{{ video['video'].title }}</p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <h3>Total Videos: {{ total_videos }}</h3>
+
+            <h3>Progress:</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ (downloaded_videos|length / total_videos) * 100 }}%"></div>
+            </div>
+
+            <a href="{{ url_for('download_zip') }}" class="btn btn-primary">Download Zip</a>
+        {% endif %}
+    </main>
+</body>
+</html>
