@@ -43,7 +43,9 @@ button {
 }
 
 select {
-    width: 100%;
+    width: 180px; 
+    max-width: 100%; 
+    flex: none;
 }
 
 button:hover {

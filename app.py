@@ -73,21 +73,23 @@ def download_multiple_videos(link, option):
 def create_zip(downloaded_videos):
     try:
         create_temp_dir_if_not_exists(TEMP_ZIP_DIR)
-        temp_zip_path = os.path.join(TEMP_ZIP_DIR, "downloaded_videos.zip")
+        temp_zip_path = os.path.join(TEMP_ZIP_DIR, "download(s).zip")
         with zipfile.ZipFile(temp_zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for video_data in downloaded_videos:
+            for index, video_data in enumerate(downloaded_videos, start=1):
                 video = video_data['video']
                 try:
-                    cleaned_title = cleaned_filename(video.title)
-                    video_stream_path = os.path.join(TEMP_DIR, f"{cleaned_title}.mp4")
+                    sanitized_title = cleaned_filename(video.title)
+                    video_stream_path = os.path.join(TEMP_DIR, f"{sanitized_title}_{index}.mp4")
                     if os.path.exists(video_stream_path):
-                        zipf.write(video_stream_path, f"{cleaned_title}.mp4")
+                        zipf.write(video_stream_path, f"{sanitized_title}_{index}.mp4") 
                 except AgeRestrictedError:
                     pass
 
         return temp_zip_path
     except Exception as e:
+        print(f"Error creating zip: {e}")
         return None
+
     
 @app.route('/', methods=['GET', 'POST'])
 def index():
