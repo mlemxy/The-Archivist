@@ -13,17 +13,23 @@
     </header>
 
     <main>
-        <form method="POST" action="/" class="form">
-            <label for="link">Input video URL:</label>
-            <input type="url" name="link" id="link" required>
-            <label for="option">Source:</label>
-            <select name="option" id="option" required class="select-box">
-                <option value="single">Video</option>
-                <option value="channel">Channel</option>
-                <option value="playlist">Playlist</option>
-            </select>
-            <button type="submit">Download Videos</button>
-        </form>
+        {% if not downloaded_videos %}
+            <form method="POST" action="/" class="form">
+                <label for="link">Input URL:</label>
+                <input type="url" name="link" id="link" required>
+                <label for="option">Source:</label>
+                <select name="option" id="option" required class="select-box">
+                    <option value="single">Video</option>
+                    <option value="playlist">Playlist</option>
+                </select>
+                <label for="format">Export Format:</label>
+                <select name="format" id="format" required class="select-box">
+                    <option value="mp4">MP4</option>
+                    <option value="wav">WAV</option>
+                </select>
+                <button type="submit">Download Videos</button>
+            </form>
+        {% endif %}
 
         {% if downloaded_videos %}
             <div class="video-container">
@@ -32,10 +38,10 @@
                         {% for video in downloaded_videos %}
                             <li class="video-item">
                                 <div class="video-thumbnail">
-                                    <img src="{{ video['video'].thumbnail_url }}" alt="Thumbnail">
+                                    <img src="{{ video['vid'].thumbnail_url }}" alt="Thumbnail">
                                 </div>
                                 <div class="video-info">
-                                    <p class="video-title">{{ video['video'].title }}</p>
+                                    <p class="video-title">{{ video['vid'].title }}</p>
                                 </div>
                             </li>
                         {% endfor %}
