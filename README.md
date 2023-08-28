@@ -30,7 +30,7 @@ $ flask run
 - [ ] Reduce processing time
 - [ ] Server deployment
 - [ ] Additional features: 
-    - [ ] Conversion to audio file
+    - [x] Conversion to audio file
 
 ## Acknowledgments
 - [Amir's youtube downloader tutorial](https://amiryousefi.medium.com/how-to-make-your-own-youtube-downloader-9cba78b05b51)
