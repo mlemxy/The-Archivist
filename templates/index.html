@@ -32,6 +32,7 @@
         {% endif %}
 
         {% if downloaded_videos %}
+            <h2>Downloaded Videos</h2>
             <div class="video-container">
                 <div class="video-list-scrollbox">
                     <ul class="video-list">
@@ -42,6 +43,22 @@
                                 </div>
                                 <div class="video-info">
                                     <p class="video-title">{{ video['vid'].title }}</p>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Not Downloaded Videos</h2>
+            <div class="video-container">
+                <div class="video-list-scrollbox">
+                    <ul class="video-list">
+                        {% for video in not_downloaded_videos %}
+                            <li class="video-item">
+                                <div class="video-info">
+                                    <p class="video-title">{{ video['vid'].title }}</p>
+                                    <p class="error-message">Error: {{ video }}</p>
                                 </div>
                             </li>
                         {% endfor %}

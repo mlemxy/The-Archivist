@@ -138,6 +138,7 @@ def cleanup():
 @app.route('/', methods=['GET', 'POST'])
 def index():
     downloaded = []
+    not_downloaded = []  
     total = 0
 
     if request.method == 'POST':
@@ -145,7 +146,8 @@ def index():
         option = request.form['option']
         audio_format = request.form['format']
         make_dir_if_not_exists(TEMP_DIR)
-        downloaded, _, total = download_all(link, option)
+        downloaded, errors, total = download_all(link, option)
+        not_downloaded = errors 
         
         if audio_format == 'wav':
             converted_paths = convert_all_videos([os.path.join(TEMP_DIR, f"{clean_title(vid['vid'].title)}.mp4") for vid in downloaded], 'wav')
@@ -155,7 +157,7 @@ def index():
         
         session['downloaded_zip'] = zip_path
 
-    return render_template('index.html', downloaded_videos=downloaded, total_videos=total, total_downloaded_videos=RUNNING_DOWNLOADED_VIDEOS)
+    return render_template('index.html', downloaded_videos=downloaded, not_downloaded_videos=not_downloaded, total_videos=total, total_downloaded_videos=RUNNING_DOWNLOADED_VIDEOS)
 
 @app.route('/download_zip', methods=['GET'])
 def download_zip():
